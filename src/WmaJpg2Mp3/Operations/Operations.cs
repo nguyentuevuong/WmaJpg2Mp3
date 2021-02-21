@@ -135,6 +135,7 @@ namespace WmaJpg2Mp3.Operations
                     {
                         _cancellationTokenSource.Token.ThrowIfCancellationRequested();
                         RaiseMessage(entry.GetSummary());
+
                         if (!entry.TargetFileAlreadyExists)
                             await entry.ExecuteConversionAsync();
 
@@ -222,7 +223,7 @@ namespace WmaJpg2Mp3.Operations
 
             public string GetSummary()
             {
-                return $"Target path: '{GenerateTargetFilePath()}' - Cover ({_albumCoverFileInfo.FullName}) ";
+                return $"Target path: '{GenerateTargetFilePath()}' - Cover ({_albumCoverFileInfo?.FullName }) ";
             }
 
             public async Task ExecuteConversionAsync()
@@ -234,36 +235,37 @@ namespace WmaJpg2Mp3.Operations
                     .Directory
                     .FullName
                 );
-                var albumCoverBytes = await _albumCoverFileInfo
-                    .PipeAsync(async x =>
-                    {
-                        using (var fileStream = File.OpenRead(
-                            _albumCoverFileInfo.FullName))
-                        {
-                            using (var memoryStream = new MemoryStream())
-                            {
-                                await fileStream.CopyToAsync(memoryStream);
-                                memoryStream.Position = 0;
-                                return memoryStream.ToArray();
-                            }
-                        }
-                    });
 
-                var id3TagData = this.Pipe(@this =>
-                    {
-                        using (var wmaStream = new NAudio.WindowsMediaFormat.WmaStream(_sourceFile.FullName))
-                        {
-                            return new ID3TagData()
-                            {
-                                AlbumArt = albumCoverBytes,
-                                Album = wmaStream["WM/AlbumTitle"],
-                                Title = wmaStream["Title"],
-                                Artist = wmaStream["WM/AlbumArtist"],
-                                Track = wmaStream["WM/TrackNumber"],
-                                Year = wmaStream["WM/Year"]
-                            };
-                        }
-                    });
+                //var albumCoverBytes = await _albumCoverFileInfo
+                //    .PipeAsync(async x =>
+                //    {
+                //        using (var fileStream = File.OpenRead(
+                //            _albumCoverFileInfo?.FullName))
+                //        {
+                //            using (var memoryStream = new MemoryStream())
+                //            {
+                //                await fileStream.CopyToAsync(memoryStream);
+                //                memoryStream.Position = 0;
+                //                return memoryStream.ToArray();
+                //            }
+                //        }
+                //    });
+
+                //var id3TagData = this.Pipe(@this =>
+                //    {
+                //        using (var wmaStream = new NAudio.WindowsMediaFormat.WmaStream(_sourceFile.FullName))
+                //        {
+                //            return new ID3TagData()
+                //            {
+                //                // AlbumArt = albumCoverBytes,
+                //                Album = wmaStream["WM/AlbumTitle"],
+                //                Title = wmaStream["Title"],
+                //                Artist = wmaStream["WM/AlbumArtist"],
+                //                Track = wmaStream["WM/TrackNumber"],
+                //                Year = wmaStream["WM/Year"]
+                //            };
+                //        }
+                //    });
 
 
                 using (var reader = new AudioFileReader(_sourceFile.FullName))
@@ -271,8 +273,8 @@ namespace WmaJpg2Mp3.Operations
                     using (var writer = new LameMP3FileWriter(
                         GenerateTargetFilePath(),
                         reader.WaveFormat,
-                        LAMEPreset.STANDARD, 
-                        id3TagData
+                        LAMEPreset.STANDARD// , 
+                        // id3TagData
                     ))
                     {
                         await reader.CopyToAsync(writer);

@@ -53,8 +53,8 @@ namespace WmaJpg2Mp3
                 else if (e.Exception != null)
                 {
                     ShowBox(
-                        "An error occurred",
-                        "An error occurred whilst performing the requested action."
+                        "Có lỗi xảy ra",
+                        "Có lỗi xảy ra với những tập tin dưới đây"
                         + Environment.NewLine + Environment.NewLine
                         + e.Exception.ToString(),
                          MessageBoxIcon.Error);
@@ -62,8 +62,8 @@ namespace WmaJpg2Mp3
                 else
                 {
                     ShowBox(
-                        "Operation completed", 
-                        $"{e.ItemCount} converted succesfully.", 
+                        "Chuyển đổi thành công", 
+                        $"{e.ItemCount} đã chuyển đổi thành công.", 
                         MessageBoxIcon.Information
                     );
                 }
@@ -116,8 +116,8 @@ namespace WmaJpg2Mp3
             }));
         }
 
-        private void btnSourceFolder_Click(object sender, EventArgs e) => SelectPath("Select source folder", tbSourceFolder);
-        private void btnDestinationFolder_Click(object sender, EventArgs e) => SelectPath("Select target folder", tbDestinationFolder);
+        private void btnSourceFolder_Click(object sender, EventArgs e) => SelectPath("Chọn thư mục chưa tập tin wma", tbSourceFolder);
+        private void btnDestinationFolder_Click(object sender, EventArgs e) => SelectPath("Chọn thư mục chứa tập tin mp3", tbDestinationFolder);
         private void btnGo_Click(object sender, EventArgs e) => _operationManager.Start(tbSourceFolder.Text, tbDestinationFolder.Text);
         private void btnCancel_Click(object sender, EventArgs e) => _operationManager.CancelCurrent();
         private void Form1_Load(object sender, EventArgs e) => SetControlState(false);
